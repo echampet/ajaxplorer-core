@@ -9,5 +9,6 @@ before_install:
  - wget http://cs.sensiolabs.org/get/php-cs-fixer.phar
 
 script:
+ - dist/scripts/tests/eol.sh
  - dist/scripts/tests/syntax.sh
  - dist/scripts/tests/codestyle.sh
