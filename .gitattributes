@@ -1,1 +1,2 @@
-*.php diff=php
+* text=auto
+*.php diff=php text
