@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notify name="fiducial"
+    label="Fiducial"
+    description="Fiducial mail notification"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="file:../core.ajaxplorer/ajxp_registry.xsd">
+    <plugin_info>
+        <plugin_author>Fiducial</plugin_author>
+    </plugin_info>
+    <client_settings>
+        <resources>
+            <i18n namespace="fiducial_notifier" path="plugins/notify.fiducial/i18n"/>
+        </resources>
+    </client_settings>
+    <server_settings>
+        <global_param name="FROM" type="string" label="CONF_MESSAGE[From]" description="CONF_MESSAGE[From]" mandatory="true" default="etienne.champetier@fiducial.net"/>
+        <global_param name="SUBJECT" type="string" label="CONF_MESSAGE[Subject]" description="CONF_MESSAGE[Subject]" mandatory="true" default="Nouveau partage" />
+        <global_param default="Bonjour Vous venez de partager %filename% à l'adresse %url% Il sera disponible jusqu'au %expiration%"
+        name="BODY" type="textarea" label="CONF_MESSAGE[Body]" description="CONF_MESSAGE[Body]" mandatory="true"/>
+    </server_settings>
+    <class_definition filename="plugins/notify.fiducial/class.fiducialNotifier.php" classname="FiducialNotifier"/>
+    <registry_contributions>
+        <hooks>
+            <serverCallback methodName="notify" hookName="node.share.create"></serverCallback>
+        </hooks>
+        <actions>
+            <action name="intranetcron">
+                <processing>
+                    <serverCallback methodName="Intranet_cron"></serverCallback>
+                </processing>
+            </action>
+        </actions>
+    </registry_contributions>
+</notify>

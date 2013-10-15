@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<authdriver name="fiducial"
+            label="Fiducial"
+            description="Fiducial authentication."
+            mixins="authdriver_commons"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="file:../core.ajaxplorer/ajxp_registry.xsd">
+    <plugin_info>
+        <plugin_author>Fiducial</plugin_author>
+    </plugin_info>
+    <client_settings>
+        <resources>
+            <i18n namespace="fiducial_auth" path="plugins/auth.fiducial/i18n"/>
+        </resources>
+    </client_settings>
+    <server_settings>
+        <param name="CASWS_URL" type="string" label="CONF_MESSAGE[CAS WS URL]" description="CONF_MESSAGE[CAS WS URL (avec ?wsdl à la fin)]" mandatory="true" default="https://lxlyodev30.fiducial.dom/CASServer/validate.asmx?wsdl" />
+        <param name="INTRANETWS_URL" type="string" label="CONF_MESSAGE[IntranetWS URL]" description="CONF_MESSAGE[IntranetWS URL (avec ?wsdl à la fin)]" mandatory="true" default="http://lxlyodev30.fiducial.dom/IntranetWS/EngineServices.asmx?wsdl" />
+        <param name="INTRANETWS_APPID" type="string" label="CONF_MESSAGE[App ID]" description="CONF_MESSAGE[Intranet App ID]" mandatory="true" default="c93c6ea8-7664-49e0-b332-1c71a36dd92c" />
+        <param name="INTRANETWS_CONTENUID" type="string" label="CONF_MESSAGE[Contenu ID]" description="CONF_MESSAGE[Intranet Contenu ID]" mandatory="true" default="d61d7979-a284-4fc3-80cd-f741cd2a4029" />
+        <param name="INTRANETWS_INSTANCEID" type="string" label="CONF_MESSAGE[Instance ID]" description="CONF_MESSAGE[Intranet Instance ID]" mandatory="true" default="a9500ace-57a0-4afa-b8ab-c2c25e35754d" />
+    </server_settings>
+    <class_definition filename="plugins/auth.fiducial/class.fiducialAuthDriver.php" classname="fiducialAuthDriver"/>
+    <registry_contributions>
+        <external_file filename="plugins/core.auth/standard_auth_actions.xml" include="actions/*" exclude=""/>
+    </registry_contributions>
+</authdriver>
