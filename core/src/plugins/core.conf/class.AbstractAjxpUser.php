@@ -361,11 +361,8 @@ abstract class AbstractAjxpUser
     /** Decode a user supplied password before using it */
     public function decodeUserPassword($password)
     {
-        if (function_exists('mcrypt_decrypt')) {
-             // We have encoded as base64 so if we need to store the result in a database, it can be stored in text column
-             $password = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($this->getId()."\1CDAFx¨op#"), base64_decode($password), MCRYPT_MODE_ECB), "\0");
-        }
-        return $password;
+        // We have encoded as base64 so if we need to store the result in a database, it can be stored in text column
+        return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($this->getId()."\1CDAFx¨op#"), base64_decode($password), MCRYPT_MODE_ECB), "\0");
     }
 
     public function setGroupPath($groupPath, $update = false)

@@ -82,11 +82,8 @@ class AJXP_Safe
      */
     private function _encodePassword($password, $user)
     {
-        if (function_exists('mcrypt_encrypt')) {
-            // We encode as base64 so if we need to store the result in a database, it can be stored in text column
-            $password = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,  md5($user.$this->secretKey), $password, MCRYPT_MODE_ECB));
-        }
-        return $password;
+        // We encode as base64 so if we need to store the result in a database, it can be stored in text column
+        return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,  md5($user.$this->secretKey), $password, MCRYPT_MODE_ECB));
     }
     /**
      * Use mcrypt functions to decode the password
@@ -96,11 +93,8 @@ class AJXP_Safe
      */
     private function _decodePassword($encoded, $user)
     {
-        if (function_exists('mcrypt_decrypt')) {
-             // We have encoded as base64 so if we need to store the result in a database, it can be stored in text column
-             $encoded = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($user.$this->secretKey), base64_decode($encoded), MCRYPT_MODE_ECB), "\0");
-        }
-        return $encoded;
+        // We have encoded as base64 so if we need to store the result in a database, it can be stored in text column
+        return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($user.$this->secretKey), base64_decode($encoded), MCRYPT_MODE_ECB), "\0");
     }
     /**
      * Store the password credentials in the session

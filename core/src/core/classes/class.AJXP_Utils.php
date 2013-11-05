@@ -1489,7 +1489,7 @@ class AJXP_Utils
                     } else if ($type == "array") {
                         $value = explode(",", $value);
                     } else if ($type == "password" && $userId!=null) {
-                        if (trim($value) != "" && function_exists('mcrypt_encrypt')) {
+                        if (trim($value) != "") {
                             // We encode as base64 so if we need to store the result in a database, it can be stored in text column
                             $value = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,  md5($userId."\1CDAFx¨op#"), $value, MCRYPT_MODE_ECB));
                         }

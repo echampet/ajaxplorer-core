@@ -583,9 +583,6 @@ class ShareCenter extends AJXP_Plugin
         if (!is_dir($downloadFolder)) {
             return "ERROR : Public URL folder does not exist!";
         }
-        if (!function_exists("mcrypt_create_iv")) {
-            return "ERROR : MCrypt must be installed to use publiclets!";
-        }
         $this->initPublicFolder($downloadFolder);
         $data["PLUGIN_ID"] = $accessDriver->getId();
         $data["BASE_DIR"] = $accessDriver->getBaseDir();
