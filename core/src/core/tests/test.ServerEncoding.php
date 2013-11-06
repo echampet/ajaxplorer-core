@@ -31,6 +31,19 @@ class ServerEncoding extends AbstractTest
     public function ServerEncoding() { parent::AbstractTest("Server charset encoding", "You must set a correct charset encoding in your locale definition in the form: en_us.UTF-8. Please refer to setlocale man page. If your detected locale is C, please check the <a href=\"http://ajaxplorer.info/knowledge-base-2/f-a-q/#39172\">F.A.Q.</a>. "); }
     public function doTest()
     {
+        // Check if we have iconv
+        if (!function_exists("iconv") ) {
+            $this->failedInfo .= "Couldn't find iconv. Please use a PHP version with iconv support";
+            return FALSE;
+        }
+        // Try converting from a known UTF-8 string to ISO8859-1 string and back to make sure it works.
+        $string = "aéàç";
+        $iso = iconv("UTF-8", "ISO-8859-1", $string);
+        $back = iconv("ISO-8859-1", "UTF-8", $iso);
+        if (strlen($iso) != 4 || ord($iso[1]) != 233 || $back != $string) {
+            $this->failedInfo .= "iconv doesn't work on your system: $string $iso $back";
+            return FALSE;
+        }
         // Get the locale
         $locale = setlocale(LC_CTYPE, 0);
         if ($locale == 'C') {
@@ -44,15 +57,6 @@ class ServerEncoding extends AbstractTest
             $this->failedInfo .= "Locale doesn't contain encoding: $locale (so using UTF-8)";
             $this->failedInfo .= "<p class='suggestion'><b>Suggestion</b> : Set the AJXP_LOCALE parameter to the correct value in the <i>conf/bootstrap_conf.php</i> file</p>";
             return FALSE;
-        }
-        // Check if we have iconv
-        if (!function_exists("iconv") && floatval(phpversion()) > 5.0) { $this->failedInfo .= "Couldn't find iconv. Please use a PHP version with iconv support"; return FALSE; }
-        if (floatval(phpversion()) > 5.0) {
-            // Try converting from a known UTF-8 string to ISO8859-1 string and back to make sure it works.
-            $string = "aéàç";
-            $iso = iconv("UTF-8", "ISO-8859-1", $string);
-            $back = iconv("ISO-8859-1", "UTF-8", $iso);
-            if (strlen($iso) != 4 || ord($iso[1]) != 233 || $back != $string) { $this->failedInfo .= "iconv doesn't work on your system: $string $iso $back"; return FALSE; }
         }
         return TRUE;
     }

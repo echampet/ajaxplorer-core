@@ -37,14 +37,7 @@ class SystemTextEncoding
     public static function changeCharset($inputCharset, $outputCharset, $text)
     {
         if ($inputCharset == $outputCharset) return $text;
-        // Due to iconv bug when dealing with text with non ASCII encoding for last char, we use this workaround http://fr.php.net/manual/fr/function.iconv.php#81494
-        if (function_exists("iconv")) {
-
-            return iconv($inputCharset, $outputCharset, $text);
-        } else {
-            $content = @htmlentities($text, ENT_QUOTES, $inputCharset);
-            return @html_entity_decode($content, ENT_QUOTES , $outputCharset);
-        }
+        return iconv($inputCharset, $outputCharset, $text);
     }
 
     public static $currentCharsetValue;
