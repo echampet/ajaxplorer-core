@@ -76,6 +76,8 @@ $REPOSITORIES[1] = array(
         "RECYCLE_BIN" 	=> 	'recycle_bin',
         "CHMOD_VALUE"   =>  '0600',
         "DEFAULT_RIGHTS"=>  "rw",
+        "PURGE_AFTER"       => 0,
+        "PURGE_AFTER_SOFT"  => 0,
         "PAGINATION_THRESHOLD" => 500,
         "PAGINATION_NUMBER" => 200,
         "META_SOURCES"		=> array(
@@ -87,6 +89,9 @@ $REPOSITORIES[1] = array(
                 "meta_fields"		=> "tags",
                 "meta_labels"		=> "Tags",
                 "meta_visibility"   => "hidden"
+            ),
+            "meta.quota"     => array(
+                "DEFAULT_QUOTA"	=> "100M"
             ),
             "meta.filehasher"   => array(),
             "meta.watch"        => array(),
