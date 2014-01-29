@@ -932,10 +932,24 @@ class AuthService
         return $authDriver->supportsUsersPagination();
     }
 
+    /**
+     * @deprecated
+     */
     public static function authCountUsers($baseGroup="/", $regexp="")
+    {
+        return self::getUsersCountFromAuth($baseGroup,$regexp);
+    }
+
+    public static function getUsersCountFromAuth($baseGroup="/", $regexp="")
     {
         $authDriver = ConfService::getAuthDriverImpl();
         return $authDriver->getUsersCount($baseGroup, $regexp);
+    }
+
+    public static function getUsersCountFromConf($baseGroup="/", $groupExactMatch = false, $regexp="")
+    {
+        $confDriver = ConfService::getConfStorageImpl();
+        return $confDriver->getUsersCountFromConf($baseGroup, $groupExactMatch, $regexp);
     }
 
     public static function getAuthScheme($userName)
