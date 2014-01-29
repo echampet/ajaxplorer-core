@@ -61,7 +61,7 @@ class sqlAuthDriver extends AbstractAuthDriver
     public function listUsersPaginated($baseGroup, $regexp, $offset, $limit)
     {
         if ($regexp != null) {
-            $like = self::regexpToLike($regexp);
+            $like = AJXP_Utils::regexpToLike($regexp);
             $res = dibi::query("SELECT * FROM [ajxp_users] WHERE [login] ".$like." AND [groupPath] LIKE %like~ ORDER BY [login] ASC", $regexp, $baseGroup) ;
         } else if ($offset != -1 || $limit != -1) {
             $res = dibi::query("SELECT * FROM [ajxp_users] WHERE [groupPath] LIKE %like~ ORDER BY [login] ASC %lmt %ofs", $baseGroup, $limit, $offset);
@@ -74,30 +74,12 @@ class sqlAuthDriver extends AbstractAuthDriver
     public function getUsersCount($baseGroup = "/", $regexp = "")
     {
         if (!empty($regexp)) {
-            $like = self::regexpToLike($regexp);
+            $like = AJXP_Utils::regexpToLike($regexp);
             $res = dibi::query("SELECT COUNT(*) FROM [ajxp_users] WHERE [login] ".$like." AND [groupPath] LIKE %like~", $regexp, $baseGroup) ;
         } else {
             $res = dibi::query("SELECT COUNT(*) FROM [ajxp_users] WHERE [groupPath] LIKE %like~", $baseGroup);
         }
         return $res->fetchSingle();
-    }
-
-    private static function regexpToLike(&$regexp)
-    {
-        $left = "~";
-        $right = "~";
-        if ($regexp[0]=="^") {
-            $regexp = ltrim($regexp, "^");
-            $left = "";
-        }
-        if ($regexp[strlen($regexp)-1] == "$") {
-            $regexp = rtrim($regexp, "$");
-            $right = "";
-        }
-        if ($left == "" && $right == "") {
-            return "= %s";
-        }
-        return "LIKE %".$left."like".$right;
     }
 
     public function listUsers($baseGroup="/")
