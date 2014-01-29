@@ -31,6 +31,11 @@ class sqlConfDriver extends AbstractConfDriver
     public $sqlDriver = array();
 
     /**
+     * listUsersFromConf support pagination ?
+     */
+    const supportsUsersPaginationInConf = true;
+
+    /**
      * Initialise the driver.
      *
      * Expects options containing a key 'SQL_DRIVER' with constructor values from dibi::connect()
@@ -596,7 +601,6 @@ class sqlConfDriver extends AbstractConfDriver
         }
         return $res->fetchAssoc('login');
     }
-
 
     /**
      * @param AbstractAjxpUser[] $flatUsersList
