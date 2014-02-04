@@ -58,41 +58,67 @@ class sqlAuthDriver extends AbstractAuthDriver
     }
 
     // $baseGroup = "/"
-    public function listUsersPaginated($baseGroup, $regexp, $offset, $limit)
+    public function listUsersPaginated($baseGroup, $regexp = null, $offset = null, $limit = null)
     {
+        if (!($offset > -1)) $offset = null;
+        if (!($limit > -1)) $limit = null;
         if ($regexp != null) {
             $like = AJXP_Utils::regexpToLike($regexp);
-            $res = dibi::query("SELECT * FROM [ajxp_users] WHERE [login] ".$like." AND [groupPath] LIKE %like~ ORDER BY [login] ASC", $regexp, $baseGroup) ;
-        } else if ($offset != -1 || $limit != -1) {
-            $res = dibi::query("SELECT * FROM [ajxp_users] WHERE [groupPath] LIKE %like~ ORDER BY [login] ASC %lmt %ofs", $baseGroup, $limit, $offset);
+            $res = dibi::query("SELECT [u.login],[u.password]
+                                FROM [ajxp_users] AS u
+                                     [ajxp_user_rights] AS r
+                                WHERE [u.login] = [r.login]
+                                      AND [u.login] ".$like."
+                                      AND [r.repo_uuid] = %s
+                                      AND [r.rights] LIKE %like~
+                                ORDER BY [u.login] ASC %lmt %ofs",
+                                $regexp, "ajxp.group_path", $baseGroup, $limit, $offset);
         } else {
-            $res = dibi::query("SELECT * FROM [ajxp_users] WHERE [groupPath] LIKE %like~ ORDER BY [login] ASC", $baseGroup);
+            $res = dibi::query("SELECT [u.login],[u.password]
+                                FROM [ajxp_users] AS u
+                                     [ajxp_user_rights] AS r
+                                WHERE [u.login] = [r.login]
+                                      AND [r.repo_uuid] = %s
+                                      AND [r.rights] LIKE %like~
+                                ORDER BY [u.login] ASC %lmt %ofs",
+                                "ajxp.group_path", $baseGroup, $limit, $offset);
         }
-        $pairs = $res->fetchPairs('login', 'password');
-           return $pairs;
+        return $res->fetchPairs('login', 'password');
     }
+
     public function getUsersCount($baseGroup = "/", $regexp = "")
     {
         if (!empty($regexp)) {
             $like = AJXP_Utils::regexpToLike($regexp);
-            $res = dibi::query("SELECT COUNT(*) FROM [ajxp_users] WHERE [login] ".$like." AND [groupPath] LIKE %like~", $regexp, $baseGroup) ;
+            $res = dibi::query("SELECT COUNT(*)
+                                FROM [ajxp_users] AS u
+                                     [ajxp_user_rights] AS r
+                                WHERE [u.login] = [r.login]
+                                      AND [u.login] ".$like."
+                                      AND [r.repo_uuid] = %s
+                                      AND [r.rights] LIKE %like~",
+                                $regexp, "ajxp.group_path", $baseGroup);
         } else {
-            $res = dibi::query("SELECT COUNT(*) FROM [ajxp_users] WHERE [groupPath] LIKE %like~", $baseGroup);
+            $res = dibi::query("SELECT COUNT(*)
+                                FROM [ajxp_users] AS u
+                                     [ajxp_user_rights] AS r
+                                WHERE [u.login] = [r.login]
+                                      AND [r.repo_uuid] = %s
+                                      AND [r.rights] LIKE %like~",
+                                "ajxp.group_path", $baseGroup);
         }
         return $res->fetchSingle();
     }
 
     public function listUsers($baseGroup="/")
     {
-        $pairs = array();
-        $res = dibi::query("SELECT * FROM [ajxp_users] WHERE [groupPath] LIKE %like~ ORDER BY [login] ASC", $baseGroup);
-        $rows = $res->fetchAll();
-        foreach ($rows as $row) {
-            $grp = $row["groupPath"];
-            if(strlen($grp) > strlen($baseGroup)) continue;
-            $pairs[$row["login"]] = $row["password"];
-        }
-        return $pairs;
+        $res = dibi::query("SELECT [login]
+                            FROM [ajxp_user_rights]
+                            WHERE [repo_uuid] = %s
+                                  AND [rights] = %s
+                            ORDER BY [login] ASC",
+                            "ajxp.group_path", $baseGroup);
+        return $res->fetchAssoc('login');
     }
 
     public function userExists($login)
@@ -131,7 +157,6 @@ class sqlAuthDriver extends AbstractAuthDriver
         } else {
             $userData["password"] = $passwd;
         }
-        $userData['groupPath'] = '/';
         dibi::query('INSERT INTO [ajxp_users]', $userData);
     }
     public function changePassword($login, $newPass)
