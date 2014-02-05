@@ -1807,4 +1807,10 @@ class AJXP_Utils
         }
         return "LIKE %".$left."like".$right;
     }
+
+    public static function groupMatchToLike($exactMatch)
+    {
+        if ($exactMatch) return "= %s";
+        return "LIKE %like~";
+    }
 }
