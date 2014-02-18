@@ -862,6 +862,46 @@ class AuthService
         self::$groupFiltering = $boolean;
     }
 
+    /**
+     * Change a user login (dirty version)
+     * @param string $oldLogin
+     * @param string $newLogin
+     */
+    public static function renameUser($oldLogin, $newLogin)
+    {
+        if (!self::userExistsInConf($oldLogin)) {
+            throw new Exception("oldLogin doesn't exists !!! (" + $oldLogin + ")");
+        }
+        if (self::userExistsInConf($newLogin)) {
+            throw new Exception("newLogin already exists !!! (" + $newLogin + ")");
+        }
+        $oldUserObject = ConfService::getConfStorageImpl()->createUserObject($oldLogin);
+
+        $repos = ConfService::getAccessibleRepositories($oldUserObject,true,false,true);
+
+        foreach ($repos as $repoId => $repoObject) {
+            if ($repoId != 1) continue;
+            $genericPath = $repoObject->options['PATH'];
+            if ($repoObject->accessType === 'fs' &&
+                strpos($genericPath, 'AJXP_USER') !== false &&
+                strpos($genericPath, 'AJXP_DATA_PATH') !== false) {
+                $genericPath = str_replace('AJXP_DATA_PATH', AJXP_DATA_PATH, $genericPath);
+                $oldPath = str_replace('AJXP_USER', $oldLogin, $genericPath);
+                $newPath = str_replace('AJXP_USER', $newLogin, $genericPath);
+                if (file_exists($oldPath)) {
+                    rename($oldPath, $newPath);
+                    AJXP_Logger::info(__CLASS__, "Move repo", $oldPath + "=>" + $newPath);
+                } else {
+                    throw new Exception("Computed Path doesn't exist!!! (" + $oldPath + ")");
+                }
+            }
+        }
+
+        AuthService::deleteUser($oldLogin);
+        $newUserObject = ConfService::getConfStorageImpl()->createUserObject($newLogin);
+        $newUserObject->save("superuser");
+    }
+
     public static function filterBaseGroup($baseGroup)
     {
         if(!self::$groupFiltering) {
