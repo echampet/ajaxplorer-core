@@ -868,9 +868,9 @@ class ShareCenter extends AJXP_Plugin
             exit();
         }
         // Load language messages
-        $language = "en";
+        $language = ConfService::getLanguage();
         if (isSet($_GET["lang"])) {
-            $language = $_GET["lang"];
+            $language = basename($_GET["lang"]);
         }
         $messages = array();
         if (is_file(dirname(__FILE__)."/res/i18n/".$language.".php")) {
